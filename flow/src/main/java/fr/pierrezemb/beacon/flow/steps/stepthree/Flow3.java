@@ -36,7 +36,7 @@ public class Flow3 {
         tupleWithSince.print();
 
         // Job needs to be started
-        env.execute();
+        env.execute("beacon");
     }
 
 }

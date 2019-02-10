@@ -9,13 +9,11 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.configuration.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SetSince extends RichMapFunction<Tuple3<String, String, Alert>, Tuple4<String, String, Alert, Long>> {
 
     private final MapStateDescriptor<String, Long> stateDescriptor = new MapStateDescriptor<String, Long>(
-            "set-since",
+            "running-alerts",
             TypeInformation.of(new TypeHint<String>(){}),
             TypeInformation.of(new TypeHint<Long>(){})
     );
@@ -26,6 +24,7 @@ public class SetSince extends RichMapFunction<Tuple3<String, String, Alert>, Tup
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
 
+        this.stateDescriptor.setQueryable("running-alerts");
         this.state = getRuntimeContext().getMapState(stateDescriptor);
     }
 
