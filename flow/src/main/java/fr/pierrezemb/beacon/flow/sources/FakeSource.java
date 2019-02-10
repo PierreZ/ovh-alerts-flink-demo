@@ -38,7 +38,7 @@ public class FakeSource implements SourceFunction<String> {
             for (String team: fakeTeamList) {
                 AlertMessage alertMessage = new AlertMessage();
                 for (String host: fakeHostList) {
-                    String selector = createSelector("host.down", host);
+                    String selector = createSelector(team, "host.down", host);
                     Boolean value = Math.random() < 0.5;
                    alertMessage.put(selector, new Alert(selector,  value));
                 }
@@ -49,8 +49,8 @@ public class FakeSource implements SourceFunction<String> {
         }
     }
 
-    public String createSelector(String classname,String host) {
-        return classname + "{host=" + host + "}";
+    public String createSelector(String team, String classname,String host) {
+        return team + "." + classname + "{host=" + host + "}";
     }
 
     @Override

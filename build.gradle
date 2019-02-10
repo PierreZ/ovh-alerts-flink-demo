@@ -96,11 +96,6 @@ project(":flow") {
         compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.stepzero'
         compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.stepzero-beta2'
         compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.8.stepzero-beta2'
-
-        // time extention
-        compile group: 'joda-time', name: 'joda-time', version: '2.10'
-        compile 'com.squareup.okhttp3:okhttp:3.10.stepzero'
-
     }
 
     run {
@@ -158,6 +153,6 @@ project(":flow") {
         }
     }
 
-    mainClassName = "fr.pierrezemb.beacon.flow.Main"
+    mainClassName = "fr.pierrezemb.beacon.flow.steps.steps0.Main0"
     applicationDefaultJvmArgs = ["-Dlog4j.configuration=file:$projectDir/src/main/resources/log4j.properties"]
 }
