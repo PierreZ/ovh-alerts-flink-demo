@@ -1,6 +1,10 @@
 package fr.pierrezemb.beacon.flow.types;
 
+import org.apache.flink.shaded.curator.org.apache.curator.shaded.com.google.common.base.Joiner;
+
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.StringJoiner;
 
 /**
  * {
@@ -35,4 +39,14 @@ import java.util.HashMap;
 
 public class Event extends HashMap<String, AlertMessage> {
 
+
+    public Event() {
+        super();
+    }
+
+
+    @Override
+    public String toString() {
+        return Joiner.on('\n').withKeyValueSeparator(" -> \n").join(this);
+    }
 }

@@ -4,10 +4,13 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonPro
 
 public class Alert {
 
-    @JsonProperty(" selector")
+    @JsonProperty("selector")
     private String selector;
-    @JsonProperty(" active")
+    @JsonProperty("active")
     private Boolean active;
+
+    public Alert() {
+    }
 
     public Alert(String selector, Boolean active) {
         this.selector = selector;
@@ -28,5 +31,13 @@ public class Alert {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public String toString() {
+        return "Alert{" +
+                "selector='" + selector + '\'' +
+                ", active=" + active +
+                '}';
     }
 }
