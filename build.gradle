@@ -1,6 +1,6 @@
 plugins {
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '2.0.2'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 allprojects {
@@ -153,6 +153,6 @@ project(":flow") {
         }
     }
 
-    mainClassName = "fr.pierrezemb.beacon.flow.steps.steps0.Main0"
+    mainClassName = "fr.pierrezemb.beacon.flow.steps.stepzero.Main0"
     applicationDefaultJvmArgs = ["-Dlog4j.configuration=file:$projectDir/src/main/resources/log4j.properties"]
 }

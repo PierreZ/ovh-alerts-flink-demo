@@ -10,11 +10,11 @@ public class Flow0 {
     public void start() throws Exception {
 
         // Retrieve an executionEnvironment
-        // final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        Configuration config = new Configuration();
-        config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, true);
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
+        // Configuration config = new Configuration();
+        // config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, true);
+        // StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
 
         // Create a Stream from Source
         DataStreamSource<String> source = env.addSource(new FakeSource(2000));
@@ -23,7 +23,7 @@ public class Flow0 {
         source.print();
 
         // Job needs to be started
-        env.execute();
+        env.execute("beacon");
     }
 
 }

@@ -23,7 +23,7 @@ public class Flow1 {
         parsedEvents.print();
 
         // Job needs to be started
-        env.execute();
+        env.execute("beacon");
     }
 
 }
