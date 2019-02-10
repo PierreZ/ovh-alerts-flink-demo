@@ -1,0 +1,163 @@
+plugins {
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '2.stepzero.2'
+}
+
+allprojects {
+    group 'ovh-alerts-flink-demo'
+    version '1.stepzero-SNAPSHOT'
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+}
+
+def flinkVersion = "1.7.1"
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'com.github.johnrengelman.shadow'
+}
+
+project(':api') {
+    description = 'The API that query the state of the alerts'
+
+    apply plugin: 'application'
+
+    version = '1.stepzero-SNAPSHOT'
+    sourceCompatibility = '1.8'
+    mainClassName = 'io.vertx.core.Launcher'
+
+    def vertxVersion = '3.5.3'
+    def mainVerticleName = 'fr.pierrezemb.beacon.api.MainVerticle'
+    def watchForChange = 'src/**/*'
+    def doOnChange = 'gradle classes'
+
+    dependencies {
+
+        // vertx
+        compile "io.vertx:vertx-core:$vertxVersion"
+        compile "io.vertx:vertx-web:$vertxVersion"
+        testCompile "junit:junit:4.12"
+        testCompile "io.vertx:vertx-unit:$vertxVersion"
+
+        // flink
+        compile group: 'org.apache.flink', name: 'flink-java', version: flinkVersion
+        compile group: 'org.apache.flink', name: 'flink-clients_2.11', version: flinkVersion
+        compile group: 'org.apache.flink', name: 'flink-queryable-state-client-java_2.11', version: flinkVersion
+
+        // logs
+        compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.stepzero'
+        compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.stepzero'
+        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.stepzero-beta2'
+        compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.8.stepzero-beta2'
+
+        // others
+        compile 'com.squareup.okhttp3:okhttp:3.10.stepzero'
+    }
+
+    shadowJar {
+        classifier = 'fat'
+        manifest {
+            attributes "Main-Verticle": mainVerticleName
+        }
+        mergeServiceFiles {
+            include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+        }
+    }
+
+    task wrapper(type: Wrapper) {
+        gradleVersion = '4.5.1'
+    }
+
+    run {
+        args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "--on-redeploy=$doOnChange"]
+    }
+}
+
+project(":flow") {
+
+    apply plugin: 'application'
+
+    dependencies {
+
+        // Flink dependencies
+        compile group: 'org.apache.flink', name: 'flink-java', version: flinkVersion
+        compile group: 'org.apache.flink', name: 'flink-streaming-java_2.11', version: flinkVersion
+        testCompile group: 'org.apache.flink', name: 'flink-test-utils_2.11', version: flinkVersion
+
+        // queryable states runtime
+        compile group: 'org.apache.flink', name: 'flink-queryable-state-runtime_2.11', version: flinkVersion
+        compile group: 'org.apache.flink', name: 'flink-runtime-web_2.11', version: flinkVersion
+
+        // logs
+        compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.stepzero'
+        compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.stepzero'
+        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.stepzero-beta2'
+        compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.8.stepzero-beta2'
+
+        // time extention
+        compile group: 'joda-time', name: 'joda-time', version: '2.10'
+        compile 'com.squareup.okhttp3:okhttp:3.10.stepzero'
+
+    }
+
+    run {
+        args = ["$projectDir/src/main/resources/"]
+    }
+
+    // http://imperceptiblethoughts.com/shadow/#filtering_dependencies
+    shadowJar {
+        dependencies {
+            exclude(dependency("org.apache.flink:flink-annotations"))
+            exclude(dependency("org.apache.flink:flink-shaded-curator-recipes"))
+            exclude(dependency("org.apache.flink:flink-core"))
+            exclude(dependency("org.apache.flink:flink-java"))
+            exclude(dependency("org.apache.flink:flink-scala_2.11"))
+            exclude(dependency("org.apache.flink:flink-runtime_2.11"))
+            exclude(dependency("org.apache.flink:flink-optimizer_2.11"))
+            exclude(dependency("org.apache.flink:flink-clients_2.11"))
+            exclude(dependency("org.apache.flink:flink-avro_2.11"))
+            exclude(dependency("org.apache.flink:flink-examples-batch_2.11"))
+            exclude(dependency("org.apache.flink:flink-examples-streaming_2.11"))
+            exclude(dependency("org.apache.flink:flink-streaming-java_2.11"))
+            exclude(dependency("org.scala-lang:.*"))
+            exclude(dependency("com.amazonaws:.*"))
+            exclude(dependency("com.typesafe.akka:.*"))
+            exclude(dependency("io.netty:.*"))
+            exclude(dependency("commons-fileupload:.*"))
+            exclude(dependency("org.apache.avro:.*"))
+            exclude(dependency("commons-collections:.*"))
+            exclude(dependency("org.codehaus.jackson:.*"))
+            exclude(dependency("com.thoughtworks.paranamer:.*"))
+            exclude(dependency("org.xerial.snappy:.*"))
+            exclude(dependency("org.apache.commons:.*"))
+            exclude(dependency("org.tukaani:.*"))
+            exclude(dependency("com.esotericsoftware.kryo:.*"))
+            exclude(dependency("com.esotericsoftware.minlog:.*"))
+            exclude(dependency("org.objenesis:.*"))
+            exclude(dependency("com.twitter:.*"))
+            exclude(dependency("commons-lang:.*"))
+            exclude(dependency("junit:.*"))
+            exclude(dependency("de.javakaffee:.*"))
+            exclude(dependency("org.apache.commons:.*"))
+            exclude(dependency("org.slf4j:.*"))
+            exclude(dependency("log4j:.*"))
+            exclude(dependency("org.apache.commons:.*"))
+            exclude(dependency("org.apache.sling:.*"))
+            exclude(dependency("commons-logging:.*"))
+            exclude(dependency("commons-codec:.*"))
+            exclude(dependency("com.fasterxml.jackson.core:.*"))
+            exclude(dependency("stax:.*"))
+            exclude(dependency("com.typesafe:.*"))
+            exclude(dependency("org.uncommons.maths:.*"))
+            exclude(dependency("com.github.scopt:.*"))
+            exclude(dependency("commons-io:.*"))
+            exclude(dependency("commons-cli:.*"))
+        }
+    }
+
+    mainClassName = "fr.pierrezemb.beacon.flow.Main"
+    applicationDefaultJvmArgs = ["-Dlog4j.configuration=file:$projectDir/src/main/resources/log4j.properties"]
+}
