@@ -5,7 +5,8 @@ import org.apache.flink.shaded.curator.org.apache.curator.shaded.com.google.comm
 
 import java.util.HashMap;
 
-public class AlertMessage extends HashMap<String, Alert> {
+
+public class AlertMessage extends HashMap<String, Boolean> {
     public AlertMessage() {
         super();
     }

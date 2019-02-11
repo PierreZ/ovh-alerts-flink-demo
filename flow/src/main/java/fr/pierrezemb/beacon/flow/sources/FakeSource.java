@@ -1,7 +1,5 @@
 package fr.pierrezemb.beacon.flow.sources;
 
-import com.esotericsoftware.kryo.util.ObjectMap;
-import fr.pierrezemb.beacon.flow.types.Alert;
 import fr.pierrezemb.beacon.flow.types.AlertMessage;
 import fr.pierrezemb.beacon.flow.types.Event;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,12 +33,14 @@ public class FakeSource implements SourceFunction<String> {
             TimeUnit.MILLISECONDS.sleep(wait);
 
             Event event = new Event();
+            int i = 0;
             for (String team: fakeTeamList) {
                 AlertMessage alertMessage = new AlertMessage();
                 for (String host: fakeHostList) {
-                    String selector = createSelector(team, "host.down", host);
+                    String selector = createSelector(team, "host.down", Character.toString ((char) (65 + i)));
+                    i++;
                     Boolean value = Math.random() < 0.5;
-                   alertMessage.put(selector, new Alert(selector,  value));
+                   alertMessage.put(selector, value);
                 }
                 event.put(team, alertMessage);
             }

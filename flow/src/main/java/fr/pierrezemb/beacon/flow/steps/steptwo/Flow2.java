@@ -1,8 +1,8 @@
 package fr.pierrezemb.beacon.flow.steps.steptwo;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import fr.pierrezemb.beacon.flow.operations.flatmap.StringToTuple;
 import fr.pierrezemb.beacon.flow.sources.FakeSource;
-import fr.pierrezemb.beacon.flow.types.Alert;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -20,7 +20,7 @@ public class Flow2 {
         DataStreamSource<String> source = env.addSource(new FakeSource(1000));
 
 
-        DataStream<Tuple3<String, String, Alert>> parsedEvents = source
+        DataStream<Tuple3<String, String, Boolean>> parsedEvents = source
                 .flatMap(new StringToTuple());
 
         // and print it
