@@ -1,5 +1,6 @@
-package fr.pierrezemb.beacon.flow.steps.stepthree;
+package fr.pierrezemb.beacon.flow.steps.stepfour;
 
+import fr.pierrezemb.beacon.flow.operations.aggregator.AlertAggregator;
 import fr.pierrezemb.beacon.flow.operations.flatmap.StringToTuple;
 import fr.pierrezemb.beacon.flow.operations.map.SetSince;
 import fr.pierrezemb.beacon.flow.sources.FakeSource;
@@ -13,8 +14,14 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public class Flow3 {
+import java.util.List;
+
+public class Flow4 {
     public void start() throws Exception {
 
         Configuration config = new Configuration();
@@ -34,8 +41,14 @@ public class Flow3 {
                 .keyBy(0) // scoping next map per namespace
                 .map(new SetSince());
 
+        DataStream<List<Tuple4<String, String, Alert, Long>>> aggregatedAlerts = tupleWithSince
+                .keyBy(0)
+                .window(TumblingProcessingTimeWindows.of(Time.seconds(10)))
+                .aggregate(new AlertAggregator());
+
         // and print it
-        tupleWithSince.print();
+
+        aggregatedAlerts.print();
 
         // Job needs to be started
         env.execute("beacon");

@@ -45,7 +45,7 @@ public class FakeSource implements SourceFunction<String> {
                 event.put(team, alertMessage);
             }
 
-            ctx.collect(objectMapper.writeValueAsString(event));
+            ctx.collectWithTimestamp(objectMapper.writeValueAsString(event), System.currentTimeMillis());
         }
     }
 
