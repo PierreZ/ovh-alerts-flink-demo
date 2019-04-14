@@ -153,6 +153,6 @@ project(":flow") {
         }
     }
 
-    mainClassName = "fr.pierrezemb.beacon.flow.steps.stepzero.Main0"
+    mainClassName = "fr.pierrezemb.beacon.flow.Main"
     applicationDefaultJvmArgs = ["-Dlog4j.configuration=file:$projectDir/src/main/resources/log4j.properties"]
 }

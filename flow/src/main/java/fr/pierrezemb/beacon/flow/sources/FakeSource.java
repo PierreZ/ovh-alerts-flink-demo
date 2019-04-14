@@ -1,7 +1,6 @@
 package fr.pierrezemb.beacon.flow.sources;
 
-import fr.pierrezemb.beacon.flow.types.AlertMessage;
-import fr.pierrezemb.beacon.flow.types.Event;
+import fr.pierrezemb.beacon.flow.types.AlertEvent;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 
@@ -32,25 +31,21 @@ public class FakeSource implements SourceFunction<String> {
         while (shouldProduce) {
             TimeUnit.MILLISECONDS.sleep(wait);
 
-            Event event = new Event();
             int i = 0;
             for (String team: fakeTeamList) {
-                AlertMessage alertMessage = new AlertMessage();
                 for (String host: fakeHostList) {
-                    String selector = createSelector(team, "host.down", Character.toString ((char) (65 + i)));
+                    String selector = createSelector("cpu.usage", Character.toString ((char) (65 + i)));
                     i++;
                     Boolean value = Math.random() < 0.5;
-                   alertMessage.put(selector, value);
+	                AlertEvent event = new AlertEvent(team, selector, value);
+	                ctx.collectWithTimestamp(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(event), System.currentTimeMillis());
                 }
-                event.put(team, alertMessage);
             }
-
-            ctx.collectWithTimestamp(objectMapper.writeValueAsString(event), System.currentTimeMillis());
         }
     }
 
-    public String createSelector(String team, String classname,String host) {
-        return team + "." + classname + "{host=" + host + "}";
+    public String createSelector(String classname,String host) {
+        return classname + "{host=" + host + "}";
     }
 
     @Override

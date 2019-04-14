@@ -160,5 +160,4 @@ public class MainVerticle extends AbstractVerticle {
         routingContext.response().putHeader("content-type", "text/plain");
         routingContext.response().end("Beeeeep beeeeep");
     }
-
 }

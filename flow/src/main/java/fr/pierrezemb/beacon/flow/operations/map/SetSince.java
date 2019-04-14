@@ -1,17 +1,16 @@
 package fr.pierrezemb.beacon.flow.operations.map;
 
+import fr.pierrezemb.beacon.flow.types.AlertEvent;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SetSince extends RichMapFunction<Tuple3<String, String, Boolean>, Tuple4<String, String, Boolean, Long>> {
+public class SetSince extends RichMapFunction<AlertEvent, AlertEvent> {
 
     private final Logger log = LoggerFactory.getLogger(SetSince.class);
 
@@ -26,37 +25,33 @@ public class SetSince extends RichMapFunction<Tuple3<String, String, Boolean>, T
     @Override
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
-
         this.stateDescriptor.setQueryable("running-alerts");
         this.state = getRuntimeContext().getMapState(stateDescriptor);
     }
 
     @Override
-    public Tuple4<String, String, Boolean, Long> map(Tuple3<String, String, Boolean> tuple) throws Exception {
+    public AlertEvent map(AlertEvent event) throws Exception {
 
         long now = System.currentTimeMillis();
-
         long since = 0L;
 
-        if (state.contains(tuple.f1)) {
-            if (tuple.f2) {
+        if (state.contains(event.getSelector())) {
+            if (event.isActive()) {
                 // state exists and running alert, fetching time
-
-                since = state.get(tuple.f1);
-                log.debug("{} was already running, setting since to {}", tuple.f1, since);
-
+                since = state.get(event.getSelector());
+                // log.debug("{} was already running, setting since to {}", event.getSelector(), since);
+	            event.setSince(since);
             } else {
                 // state exists but alert is no longer running, erasing it
-                log.debug( "{} is no longer in progress, deleting it from state", tuple.f1);
-                state.remove(tuple.f1);
+                // log.debug( "{} is no longer in progress, deleting it from state", event.getSelector());
+                state.remove(event.getSelector());
             }
         } else {
-            if (tuple.f2) {
+            if (event.isActive()) {
                 // running alert and empty state, feeding up state
-                state.put(tuple.f1, now);
+                state.put(event.getSelector(), now);
             }
         }
-
-        return new Tuple4<>(tuple.f0, tuple.f1, tuple.f2, since);
+        return event;
     }
 }

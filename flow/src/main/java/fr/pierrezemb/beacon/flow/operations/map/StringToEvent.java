@@ -1,15 +1,15 @@
 package fr.pierrezemb.beacon.flow.operations.map;
 
-import fr.pierrezemb.beacon.flow.types.Event;
+import fr.pierrezemb.beacon.flow.types.AlertEvent;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 
-public class StringToEvent implements MapFunction<String, Event> {
+public class StringToEvent implements MapFunction<String, AlertEvent> {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public Event map(String json) throws Exception {
-        return objectMapper.readValue(json, Event.class);
+    public AlertEvent map(String json) throws Exception {
+        return objectMapper.readValue(json, AlertEvent.class);
     }
 }

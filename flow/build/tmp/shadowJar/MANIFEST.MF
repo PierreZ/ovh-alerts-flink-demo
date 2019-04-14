@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: fr.pierrezemb.beacon.flow.steps.steps0.Main0
-

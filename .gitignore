@@ -92,3 +92,8 @@ fabric.properties
 
 .gradle/
 .idea/
+
+api/build/
+api/out/
+flow/build/
+flow/out/
