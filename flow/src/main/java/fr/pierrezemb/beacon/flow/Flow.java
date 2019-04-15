@@ -17,6 +17,7 @@ public class Flow {
 		// Retrieve an executionEnvironment
 		Configuration config = new Configuration();
 		config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, true);
+		config.setBoolean("queryable-state.enable", true);
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
 		env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
 
