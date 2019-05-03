@@ -27,11 +27,11 @@ public class Flow {
 
 		DataStream<AlertEvent> parsedEvents = source
 				// Transform String to AlertEvent
-				.map(new StringToEvent())
+				.map(StringToEvent::new)
 				// split events per team
 				.keyBy(AlertEvent::getTeam)
 				// set Since on every event. This map is sharded per-team.
-				.map(new SetSince());
+				.map(SetSince::new);
 
 		// and print it
 		parsedEvents.print();
